@@ -3,88 +3,118 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-# To load dataset
-df = pd.read_csv("galaxy_data.csv")
 
-print("Dataset loaded successfully\n")
+# Load dataset
+df = pd.read_csv("star_classification.csv")
 
-print(df.head())
+print("\nDataset loaded successfully\n")
 
-# Some information
-print("\nDataset Information:\n")
-print(df.info())
+# Data cleaning
 
-print("\nStatistical Summary:\n")
-print(df.describe())
+print("\nChecking missing values:\n")
+print(df.isnull().sum())
 
-# To count no. of each  galaxy type
-print("\nNumebr of each type of galaxies:\n")
-type = df["Galaxy_Type"].value_counts()
-print(type)
+df = df.dropna()
 
-# Calculate avg brightness
-avg_brightness = df["Brightness"].mean()
-print("\nAverage Brightness:", avg_brightness)
+df = df.drop_duplicates()
 
-# Galaxy type bar chart
+df.reset_index(drop=True, inplace=True)
+
+print("\nData cleaned successfully")
+
+# Count types of objects
+
+type_counts = df["class"].value_counts()
+
+print("\nObject Type Counts:\n")
+print(type_counts)
+
+# Bar chart
+
 plt.figure()
 
-type.plot(kind="bar")
-plt.title("Distribution of Galaxy Types")
-plt.xlabel("Galaxy Type")
+type_counts.plot(kind="bar")
+plt.title("Distribution of Object Types")
+plt.xlabel("Object Type")
 plt.ylabel("Count")
-plt.savefig("galaxy_type_bar_chart.png")
+plt.savefig("object_type_bar_chart.png")
 plt.show()
 
-# Brightness dist. histogram
+# Pie Chart
+
 plt.figure()
 
-plt.hist(df["Brightness"])
+type_counts.plot(kind="pie")
+plt.title("Percentage of Object Types")
+plt.ylabel("")
+plt.savefig("object_type_pie_chart.png")
+plt.show()
 
+# Histogram of brightness (r band)
+
+plt.figure()
+
+plt.hist(df["r"])
 plt.title("Brightness Distribution")
-plt.xlabel("Brightness")
+plt.xlabel("Brightness (r band)")
 plt.ylabel("Frequency")
 plt.savefig("brightness_histogram.png")
 plt.show()
 
-# Redshift vs size plot
-plt.figure()
+# Scatter plot of redshift vs brightness (r band)
+sample_df = df.sample(n=2000)
 
-plt.scatter(df["Redshift"], df["Size"])
+plt.figure(figsize=(10, 6))
 
-plt.title("Redshift vs Size")
+plt.scatter(
+    sample_df["redshift"],
+    sample_df["r"],
+    s=10,
+    alpha=0.4
+)
+
+plt.title("Redshift vs Brightness")
+
 plt.xlabel("Redshift")
-plt.ylabel("Size")
-plt.savefig("redshift_plot.png")
+
+plt.ylabel("Brightness")
+
 plt.show()
 
-# % of galaxy type pie chart
+# Box plot of brightness by object type
+
 plt.figure()
 
-type.plot(kind="pie", autopct="%1.1f%%") ##############
-
-plt.title("Percentage of Galaxy Types")
-
-
-plt.savefig("pie_chart.png")
+sns.boxplot(x="class", y="r", data=df)
+plt.title("Brightness Distribution by Object Type")
+plt.savefig("brightness_box_plot.png")
 plt.show()
 
-# Brightness by galaxy type
-plt.figure()
 
-sns.boxplot(x="Galaxy_Type", y="Brightness", data=df)
+# Correation heatmap    
 
-plt.title("Brightness Distribution by Galaxy Type")
-plt.savefig("box_plot.png")
-plt.show()
+plt.figure(figsize=(10, 6))
 
-# Correlation heatmap
-plt.figure()
+selected_columns = ["u", "g", "r", "i", "z", "redshift"]
 
-corr = df.corr(numeric_only=True)
+corr = df[selected_columns].corr()
 
 sns.heatmap(corr, annot=True)
 
-plt.title("Correlation Between Galaxy Properties")
-plt.savefig("heatmap.png")
+plt.title("Correlation Between Brightness and Redshift")
+
+plt.savefig("correlation_heatmap.png")
+
 plt.show()
+
+# Additional statistics
+
+print("\nAverage Brightness:", np.mean(df["r"]))
+print("Maximum Brightness:", np.max(df["r"]))
+print("Minimum Brightness:", np.min(df["r"]))
+
+# Saving dataframe to a new CSV file
+
+df.to_csv("processed_star_data.csv", index=False)
+
+print("\nData saved successfully")
