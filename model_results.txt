@@ -1,0 +1,20 @@
+
+-----------------------------
+Run Time: 2026-04-11 18:49:34.236048
+Model Accuracy: 0.9780
+Predicted Class: STAR
+Prediction Confidence:
+GALAXY: 4.00%
+QSO: 1.00%
+STAR: 95.00%
+-----------------------------
+
+-----------------------------
+Run Time: 2026-04-11 20:57:46.578319
+Model Accuracy: 0.9780
+Predicted Class: QSO
+Prediction Confidence:
+GALAXY: 33.00%
+QSO: 66.00%
+STAR: 1.00%
+-----------------------------
