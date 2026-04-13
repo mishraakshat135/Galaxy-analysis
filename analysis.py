@@ -5,6 +5,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from tqdm import tqdm
 from datetime import datetime
+import time
+import joblib
+from scipy.stats import zscore
 
 # Machine learning libraries
 
@@ -22,13 +25,9 @@ print("\nDataset loaded successfully\n")
 
 print("\nChecking missing values:\n")
 print(df.isnull().sum())
-
 df = df.dropna()
-
 df = df.drop_duplicates()
-
 df.reset_index(drop=True, inplace=True)
-
 print("\nData cleaned successfully")
 
 # Count types of objects
@@ -83,11 +82,8 @@ plt.scatter(
 )
 
 plt.title("Redshift vs Brightness")
-
 plt.xlabel("Redshift")
-
 plt.ylabel("Brightness")
-
 plt.show()
 
 # Box plot of brightness by object type
@@ -152,13 +148,16 @@ model = RandomForestClassifier(
 )
 
 print("\nTraining model...")
-
+start_time = time.time()
 for i in tqdm(range(1, total_trees + 1), desc="Training Trees"):
 
     model.n_estimators = i
 
     model.fit(X_train, y_train)
+end_time = time.time()
+training_time = end_time - start_time
 print("\nModel trained successfully")
+print(f"Training time: {training_time:.2f} seconds")
 
 # Predictions
 
@@ -253,6 +252,7 @@ current_time = datetime.now()
 
 with open("model_results.txt", "a") as file:
     file.write(f"Run Time: {current_time}\n")
+    file.write(f"Training Time: {training_time:.2f} seconds\n")
     file.write(f"Model Accuracy: {accuracy:.4f}\n")
     file.write(f"Predicted Class: {prediction[0]}\n")
     file.write("Prediction Confidence:\n")
@@ -260,3 +260,8 @@ with open("model_results.txt", "a") as file:
         file.write(f"{class_name}: {prob*100:.2f}%\n")
 print("\nResults saved to model_results.txt")
 
+# Save model
+
+joblib.dump(model, "trained_model.pkl")
+
+print("\nModel saved as trained_model.pkl")
