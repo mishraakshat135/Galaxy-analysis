@@ -7,7 +7,7 @@ from tqdm import tqdm
 from datetime import datetime
 import time
 import joblib
-from scipy.stats import zscore
+
 
 # Machine learning libraries
 
@@ -18,7 +18,6 @@ from sklearn.metrics import accuracy_score, confusion_matrix, classification_rep
 
 # Load dataset
 df = pd.read_csv("star_classification.csv")
-
 print("\nDataset loaded successfully\n")
 
 # Data cleaning
@@ -29,6 +28,8 @@ df = df.dropna()
 df = df.drop_duplicates()
 df.reset_index(drop=True, inplace=True)
 print("\nData cleaned successfully")
+
+
 
 # Count types of objects
 
@@ -72,7 +73,7 @@ plt.show()
 # Scatter plot of redshift vs brightness (r band)
 sample_df = df.sample(n=2000)
 
-plt.figure(figsize=(10, 6))
+plt.figure()
 
 plt.scatter(
     sample_df["redshift"],
